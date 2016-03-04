@@ -25,6 +25,7 @@ module ChatDemo
         hash = Hash.new
         hash['handle'] = "Support"
         hash['text'] = text
+	hash['user'] = user
         @redis.publish("chat-demo", hash.to_json)
       end
     end

@@ -12,13 +12,21 @@ module ChatDemo
     def initialize(app)
       @app     = app
       @clients = []
+      @hash = Hash.new
+
       uri = URI.parse(ENV["REDISCLOUD_URL"])
       @redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
       Thread.new do
         redis_sub = Redis.new(host: uri.host, port: uri.port, password: uri.password)
         redis_sub.subscribe(CHANNEL) do |on|
           on.message do |channel, msg|
-            @clients.each {|ws| ws.send(msg) }
+	    puts "Need to send message"
+            json = JSON.parse(msg)
+	    user = json['user']
+	    puts "Handle is #{user}"
+	    ws = @hash[user]
+	    puts "websocket: #{ws}"
+	    ws.send(msg) unless ws.nil?
           end
         end
       end
@@ -37,6 +45,7 @@ module ChatDemo
 	  json = JSON.parse(event.data)
 	  if json['text'].nil?
             puts "Got handle: #{json['handle']}"
+	    @hash[json['handle']] = ws
 	  else
 	    message = "#{json['handle']}: #{json['text']}"
 	    `curl -X POST -d '{"text":"#{message}"}' -H "Content-Type:application/json;charset=UTF-8" https://api.flock.co/hooks/sendMessage/df4df2e4-c2fe-4f70-86fe-7bfdd09c7b15`
@@ -47,6 +56,8 @@ module ChatDemo
         ws.on :close do |event|
           p [:close, ws.object_id, event.code, event.reason]
           @clients.delete(ws)
+	  #key = @hash.key(ws)
+          #@hash.delete(key) unless key.nil?
           ws = nil
         end
 
