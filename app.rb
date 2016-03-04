@@ -26,9 +26,16 @@ module ChatDemo
       if params['incoming-url'].nil? || params['outgoing-token'].nil? || params['support-name'].nil? || params['welcome-message'].nil?
         { :error => "Keys missing"}.to_json
       else
-        uuid = SecureRandom.uuid
-        @redis.set(uuid, hash)
-        { :uuid => uuid }.to_json
+        outgoing_token = params['outgoing-token']
+	current_uuid = @redis.get(outgoing_token)
+	if current_uuid.nil?
+          uuid = SecureRandom.uuid
+          @redis.set(uuid, hash)
+	  @redis.set(outgoing_token, uuid)
+          { :uuid => uuid }.to_json
+	else
+          { :uuid => current_uuid}.to_json
+	end
       end
     end
 
