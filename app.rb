@@ -17,6 +17,11 @@ module ChatDemo
       erb :"register.html"
     end
 
+    post "/register" do
+      data = JSON.parse(request.body.read.to_s)
+      puts data
+    end
+
     post "/support" do
       uri = URI.parse(ENV["REDISCLOUD_URL"])
       @redis ||= Redis.new(host: uri.host, port: uri.port, password: uri.password)
