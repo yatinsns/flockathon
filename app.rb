@@ -30,7 +30,7 @@ module ChatDemo
 	current_uuid = @redis.get(outgoing_token)
 	if current_uuid.nil?
           uuid = SecureRandom.uuid
-          @redis.set(uuid, hash)
+          @redis.set(uuid, params)
 	  @redis.set(outgoing_token, uuid)
           { :uuid => uuid }.to_json
 	else
