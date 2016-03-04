@@ -26,6 +26,7 @@ module ChatDemo
 
     def call(env)
       if Faye::WebSocket.websocket?(env)
+	puts "got websocket"
         ws = Faye::WebSocket.new(env, nil, {ping: KEEPALIVE_TIME })
         ws.on :open do |event|
           p [:open, ws.object_id]
