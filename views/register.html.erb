@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Flockster Registration</title>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="assets/css/application.css" rel="stylesheet" media="screen">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <div class="container">
+      <div class="jumbotron">
+        <h1>Flockster</h1>
+	<p> Register your company for Flockster support with following:</p>
+      </div>
+      <form id="input-form" class="form-inline">
+        <div class="form-group">
+          <input id="incoming-handle" type="text" class="form-control" placeholder="Incoming webhook URL" autofocus />
+	</div><br/><br/>
+	<div class="form-group">
+	  Please configure outgoing webhook with callback URL as 'https://flockathon.fwd.wf/support'.
+          <input id="outgoing-handle" type="text" class="form-control" placeholder="Outgoing webhook token" autofocus />
+	</div><br/><br/>
+        <div class="form-group">
+          <input id="support-name" type="text" class="form-control" placeholder="Support client name" autofocus />
+	</div><br/><br/>
+        <button class="btn btn-primary" type="submit">Register</button>
+      </form>
+    </div>
+  </body>
+</html>
