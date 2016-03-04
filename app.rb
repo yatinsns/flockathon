@@ -18,11 +18,15 @@ module ChatDemo
       @redis ||= Redis.new(host: uri.host, port: uri.port, password: uri.password)
       puts "#{params}"
       data = JSON.parse(request.body.read.to_s)
-      puts data['text']
-      hash = Hash.new
-      hash['handle'] = "Support"
-      hash['text'] = data['text']
-      @redis.publish("chat-demo", hash.to_json)
+      values = data['text'].split(':')
+      user = values[0]
+      text = values[1]
+      unless text.nil?
+        hash = Hash.new
+        hash['handle'] = "Support"
+        hash['text'] = text
+        @redis.publish("chat-demo", hash.to_json)
+      end
     end
   end
 end
