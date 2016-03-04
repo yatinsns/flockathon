@@ -11,6 +11,7 @@ GEM
     rack-protection (1.5.0)
       rack
     redis (3.0.4)
+    rubysl-securerandom (2.0.0)
     sinatra (1.4.3)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -25,4 +26,5 @@ DEPENDENCIES
   faye-websocket
   puma
   redis
+  rubysl-securerandom
   sinatra
