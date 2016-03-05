@@ -46,7 +46,11 @@ module ChatDemo
 	  if json['text'].nil?
             puts "Got handle: #{json['handle']}"
 	    @hash[json['handle']] = ws
-	    ws.send({"support-name"=> "Flock Support", "welcome-message"=> "Hey. How can I help you?"}.to_json)
+
+	    uuid = json['uuid']
+	    company_hash_string = @redis.get(uuid)
+            company_hash = JSON.parse company_hash_string.gsub('=>', ':')
+	    ws.send({"support-name"=> company_hash['support-name'], "welcome-message"=> company_hash['welcome-message']}.to_json)
 	  else
 	    message = "#{json['handle']}: #{json['text']}"
 	    `curl -X POST -d '{"text":"#{message}"}' -H "Content-Type:application/json;charset=UTF-8" https://api.flock.co/hooks/sendMessage/df4df2e4-c2fe-4f70-86fe-7bfdd09c7b15`
