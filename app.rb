@@ -27,7 +27,10 @@ module ChatDemo
         { :error => "Keys missing"}.to_json
       else
         configuration_message = "This group will now receive messages from users using Flockster."
-	`curl -X POST -d '{"text":"#{configuration_message}"}' -H "Content-Type:application/json;charset=UTF-8" https://api.flock.co/hooks/sendMessage/df4df2e4-c2fe-4f70-86fe-7bfdd09c7b15`
+
+	# FIXME: This can be moved to show only once when company registers.
+	# This message is currently sent everytime same company registers just for DEMO purpose.
+	`curl -X POST -d '{"text":"#{configuration_message}"}' -H "Content-Type:application/json;charset=UTF-8" #{params['incoming-url']}`
         outgoing_token = params['outgoing-token']
 	current_uuid = @redis.get(outgoing_token)
 	if current_uuid.nil?
