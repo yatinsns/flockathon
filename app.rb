@@ -54,21 +54,26 @@ module ChatDemo
       values = data['text'].split(':')
       user = values[0]
       text = values[1]
+
+      outgoing_token = params['token']
+      uuid = @redis.get(outgoing_token)
+      hash_string = @redis.get(uuid)
+      puts "hash is #{hash_string}"
+      hash = JSON.parse hash_string.gsub('=>', ':')
+      guid = data['from'].split('/')[0]
+
       unless text.nil?
-        hash = Hash.new
-        hash['handle'] = "Support"
-        hash['text'] = text
-	hash['user'] = user
-        @redis.publish("chat-demo", hash.to_json)
+	unless hash['guid'] == guid
+          message_hash = Hash.new
+          message_hash['handle'] = "Support"
+          message_hash['text'] = text
+	  message_hash['user'] = user
+          @redis.publish("chat-demo", message_hash.to_json)
+	end
       else
 	if user == "This group will now receive messages from users using Flockster."
           puts "Received configuration message back"
-	  outgoing_token = params['token']
-	  uuid = @redis.get(outgoing_token)
-	  hash_string = @redis.get(uuid)
-	  puts "hash is #{hash_string}"
-	  hash = JSON.parse hash_string.gsub('=>', ':')
-	  hash['guid'] = data['from'].split('/')[0]
+	  hash['guid'] = guid
           @redis.set(uuid, hash)
 	end
       end
