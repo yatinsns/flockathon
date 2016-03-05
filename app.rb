@@ -21,21 +21,28 @@ module ChatDemo
     post "/register" do
       uri = URI.parse(ENV["REDISCLOUD_URL"])
       @redis ||= Redis.new(host: uri.host, port: uri.port, password: uri.password)
+      puts "#{params}"
 
-      data_str = request.body.read.to_s
-      if data_str.length > 0
-        data = JSON.parse(data_str)
-        hash = Hash.new
-        hash[:incoming_url] = "incoming"
-        hash[:outgoing_token] = "outgoing"
-        hash[:support_name] = "support"
-        hash[:welcome_message] = "Welcome Sir"
-
-        uuid = SecureRandom.uuid
-        @redis.set(uuid, hash)
-        { :uuid => uuid }.to_json
+      if params['incoming-url'].nil? || params['outgoing-token'].nil? || params['support-name'].nil? || params['welcome-message'].nil?
+        { :error => "Keys missing"}.to_json
       else
-        { :error => "Data missing"}.to_json
+        configuration_message = "This group will now receive messages from users using Flockster."
+	`curl -X POST -d '{"text":"#{configuration_message}"}' -H "Content-Type:application/json;charset=UTF-8" https://api.flock.co/hooks/sendMessage/df4df2e4-c2fe-4f70-86fe-7bfdd09c7b15`
+        outgoing_token = params['outgoing-token']
+	current_uuid = @redis.get(outgoing_token)
+	if current_uuid.nil?
+          uuid = SecureRandom.uuid
+	  hash = Hash.new
+	  hash['incoming-url'] = params['incoming-url']
+	  hash['outgoing-token'] = params['outgoing-token']
+	  hash['support-name'] = params['support-name']
+	  hash['welcome-message'] = params['welcome-message']
+          @redis.set(uuid, hash)
+	  @redis.set(outgoing_token, uuid)
+          { :uuid => uuid }.to_json
+	else
+          { :uuid => current_uuid}.to_json
+	end
       end
     end
 
@@ -47,12 +54,28 @@ module ChatDemo
       values = data['text'].split(':')
       user = values[0]
       text = values[1]
+
+      outgoing_token = params['token']
+      uuid = @redis.get(outgoing_token)
+      hash_string = @redis.get(uuid)
+      puts "hash is #{hash_string}"
+      hash = JSON.parse hash_string.gsub('=>', ':')
+      guid = data['from'].split('/')[0]
+
       unless text.nil?
-        hash = Hash.new
-        hash['handle'] = "Support"
-        hash['text'] = text
-	hash['user'] = user
-        @redis.publish("chat-demo", hash.to_json)
+	unless hash['guid'] == guid
+          message_hash = Hash.new
+          message_hash['handle'] = "Support"
+          message_hash['text'] = text
+	  message_hash['user'] = user
+          @redis.publish("chat-demo", message_hash.to_json)
+	end
+      else
+	if user == "This group will now receive messages from users using Flockster."
+          puts "Received configuration message back"
+	  hash['guid'] = guid
+          @redis.set(uuid, hash)
+	end
       end
     end
   end
