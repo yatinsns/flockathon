@@ -24,6 +24,7 @@ module ChatDemo
             json = JSON.parse(msg)
 	    user = json['user']
 	    puts "Handle is #{user}"
+	    puts "current hash is #{@hash}"
 	    ws = @hash[user]
 	    puts "websocket: #{ws}"
 	    ws.send(msg) unless ws.nil?
@@ -46,6 +47,7 @@ module ChatDemo
 	  if json['text'].nil?
             puts "Got handle: #{json['handle']}"
 	    @hash[json['handle']] = ws
+	    puts "current hash is #{@hash}"
 	    ws.send({"support-name"=> "Flock Support", "welcome-message"=> "Hey. How can I help you?"}.to_json)
 	  else
 	    message = "#{json['handle']}: #{json['text']}"

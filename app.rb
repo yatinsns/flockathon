@@ -59,6 +59,7 @@ module ChatDemo
       uuid = @redis.get(outgoing_token)
       hash_string = @redis.get(uuid)
       puts "hash is #{hash_string}"
+      puts "text is #{text}"
       hash = JSON.parse hash_string.gsub('=>', ':')
       guid = data['from'].split('/')[0]
 
