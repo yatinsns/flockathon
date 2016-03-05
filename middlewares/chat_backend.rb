@@ -26,6 +26,7 @@ module ChatDemo
 	    uuid = json['uuid']
 	    puts "uuid: #{uuid} Handle is #{user}"
 	    ws = @hash[get_key(uuid, user)]
+	    puts "current hash is #{@hash}"
 	    puts "websocket: #{ws}"
 	    ws.send(msg) unless ws.nil?
           end
@@ -56,6 +57,7 @@ module ChatDemo
             puts "Got uuid: #{json['uuid']} handle: #{json['handle']}"
 	    @hash[get_key(json['uuid'], json['handle'])] = ws
 
+	    puts "current hash is #{@hash}"
 	    ws.send({"support-name"=> company_hash['support-name'], "welcome-message"=> company_hash['welcome-message']}.to_json)
 	  else
 	    message = "#{json['handle']}: #{json['text']}"
