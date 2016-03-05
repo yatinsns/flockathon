@@ -71,6 +71,7 @@ module ChatDemo
           message_hash['handle'] = hash['support-name']
           message_hash['text'] = text
 	  message_hash['user'] = user
+	  message_hash['uuid'] = uuid
           @redis.publish("chat-demo", message_hash.to_json)
 	end
       else
