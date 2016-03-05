@@ -59,7 +59,7 @@ module ChatDemo
 	    ws.send({"support-name"=> company_hash['support-name'], "welcome-message"=> company_hash['welcome-message']}.to_json)
 	  else
 	    message = "#{json['handle']}: #{json['text']}"
-	    incoming_url = company_hash['incoming-url']
+	    incoming_url = company_hash['incoming-url'].chomp
 	    `curl -X POST -d '{"text":"#{message}"}' -H "Content-Type:application/json;charset=UTF-8" #{incoming_url}`
             p [:message, event.data]
 	  end
