@@ -68,7 +68,7 @@ module ChatDemo
       unless text.nil?
 	unless hash['guid'] == guid
           message_hash = Hash.new
-          message_hash['handle'] = "Support"
+          message_hash['handle'] = hash['support-name']
           message_hash['text'] = text
 	  message_hash['user'] = user
           @redis.publish("chat-demo", message_hash.to_json)
