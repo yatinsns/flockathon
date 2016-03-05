@@ -23,13 +23,18 @@ module ChatDemo
 	    puts "Need to send message"
             json = JSON.parse(msg)
 	    user = json['user']
-	    puts "Handle is #{user}"
-	    ws = @hash[user]
+	    uuid = json['uuid']
+	    puts "uuid: #{uuid} Handle is #{user}"
+	    ws = @hash[get_key(uuid, user)]
 	    puts "websocket: #{ws}"
 	    ws.send(msg) unless ws.nil?
           end
         end
       end
+    end
+
+    def get_key(uuid, handle)
+      "#{uuid}-#{handle}"
     end
 
     def call(env)
@@ -48,8 +53,8 @@ module ChatDemo
           company_hash = JSON.parse company_hash_string.gsub('=>', ':')
 
 	  if json['text'].nil?
-            puts "Got handle: #{json['handle']}"
-	    @hash[json['handle']] = ws
+            puts "Got uuid: #{json['uuid']} handle: #{json['handle']}"
+	    @hash[get_key(json['uuid'], json['handle'])] = ws
 
 	    ws.send({"support-name"=> company_hash['support-name'], "welcome-message"=> company_hash['welcome-message']}.to_json)
 	  else
